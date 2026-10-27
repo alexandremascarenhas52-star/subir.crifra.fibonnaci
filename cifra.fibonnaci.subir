@@ -1,0 +1,42 @@
+import streamlit as st
+
+
+def criptografar_cesar(texto: str, chave: int) -> str:
+    resultado = []
+    for caractere in texto:
+        if caractere.isupper():
+            # Letra maiúscula (ASCII de 'A' é 65)
+            novo_caractere = chr((ord(caractere) - 65 + chave) % 26 + 65)
+            resultado.append(novo_caractere)
+        elif caractere.islower():
+            # Letra minúscula (ASCII de 'a' é 97)
+            novo_caractere = chr((ord(caractere) - 97 + chave) % 26 + 97)
+            resultado.append(novo_caractere)
+        else:
+            # Não é uma letra do alfabeto (espaços, pontuação, números, etc.)
+            resultado.append(caractere)
+    return ''.join(resultado)
+
+
+st.set_page_config(page_title="Cifra de César", page_icon="🔐")
+st.title("🔐 Cifra de César")
+
+texto_original = st.text_area("Texto original", value="Hello, World! 123")
+chave = st.number_input("Chave", min_value=0, max_value=25, value=3, step=1)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Criptografar", use_container_width=True):
+        texto_criptografado = criptografar_cesar(texto_original, chave)
+        st.session_state["resultado"] = texto_criptografado
+
+with col2:
+    if st.button("Descriptografar", use_container_width=True):
+        # Descriptografar é criptografar com a chave invertida
+        texto_descriptografado = criptografar_cesar(texto_original, -chave)
+        st.session_state["resultado"] = texto_descriptografado
+
+if "resultado" in st.session_state:
+    st.subheader("Resultado")
+    st.code(st.session_state["resultado"], language=None)
